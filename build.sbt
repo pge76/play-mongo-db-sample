@@ -1,4 +1,4 @@
-name := """play-java-car-sample"""
+name := """play-mongo-db-sample"""
 organization := "de.pge.play"
 
 version := "1.0-SNAPSHOT"
