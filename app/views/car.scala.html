@@ -3,18 +3,41 @@
 @(cars: Seq[Car], form: Form[CarData])(implicit request: Request, messages: play.i18n.Messages)
 
 @main("Cars") {
-
-    <h1>Cars</h1>
-
     @* Flash shows updates to a page *@
     @request.flash.asScala().data.map { case (name, value) =>
-    <div class="@name">@value</div>
+    <div style="position: relative;">
+        <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-delay="8000" style="position: absolute; top: 20px; right: 20px; min-width: 300px; min-height: 100px; z-index: 1;">
+            <div class="toast-header">
+                <strong class="mr-auto">System</strong>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body align-content-center">
+                <span class="font-weight-bold">@name:</span> @value
+    </div>
+    </div>
+    </div>
+        <script>
+                $(document).ready(function () {
+                    $(".toast").toast('show');
+                });
+        </script>
+    }
+    <div class="container">
+    <h1>Superkrasse Liste von Autos!</h1>
+
+    @b4.horizontal.form(routes.CarController.add(), "col-md-4", "col-md-8") { implicit vfc =>
+        @helper.CSRF.formField
+        @b4.text(form("name"), Symbol("_label") -> "Name", Symbol("placeholder") -> "Trabant 501S", Symbol("_help")-> "")
+        @b4.text(form("color"), Symbol("_label") -> "Farbe", Symbol("placeholder") -> "Beige", Symbol("_help") -> "")
+        @b4.number(form("topSpeed"), Symbol("_label") -> "Max. Geschwindigkeit", Symbol("placeholder") -> "100", Symbol("_help") -> "zwischen 0 und 400 km/h")
+        @b4.submit(Symbol("class") -> "btn btn-primary"){ Auto hinzufügen }
     }
 
-
-    <table>
-        <thead>
-            <tr><th>Name</th><th>Color</th><th>Top Speed</th>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr><th>Name</th><th>Farbe</th><th>Max. Geschwindigkeit</th>
         </thead>
         <tbody>
         @for(c <- cars) {
@@ -25,22 +48,13 @@
 
     @if(form.hasGlobalErrors) {
         @form.globalErrors.asScala.map { error: play.data.validation.ValidationError =>
-            <div>
-                @error.key: @error.message
+            <div class="toast" style="position: absolute; top: 0;" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-body">
+                    <div>@error.key: @error.message</div>
+                </div>
             </div>
         }
     }
 
-    @helper.form(routes.CarController.add()) {
-        @helper.CSRF.formField
-
-        @helper.inputText(form("name"))
-
-        @helper.inputText(form("color"))
-
-        @helper.inputText(form("topSpeed"))
-
-        <button type="submit">Add Car</button>
-    }
-
+    </div>
 }
